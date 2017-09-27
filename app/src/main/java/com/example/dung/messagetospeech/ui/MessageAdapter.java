@@ -1,24 +1,28 @@
-package com.example.dung.messagetospeech;
+package com.example.dung.messagetospeech.ui;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.dung.messagetospeech.R;
+import com.example.dung.messagetospeech.models.Message;
+
 import java.util.List;
 
 /**
+ *
  * Created by dung on 29/08/2017.
+ *
  */
 class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
     private OnItemClickListener mOnItemClickListener;
-    private List<String> mMessages;
+    private List<Message> mMessages;
 
-    MessageAdapter(List<String> messages, OnItemClickListener onItemClickListener) {
+    MessageAdapter(List<Message> messages, OnItemClickListener onItemClickListener) {
         mMessages = messages;
         mOnItemClickListener = onItemClickListener;
     }
@@ -31,8 +35,8 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(MessageAdapter.ViewHolder holder, int position) {
-        Log.d("aaaaaaaaaaaaa", "onBindViewHolder: " + mMessages.get(position));
-        holder.mTvMessage.setText(mMessages.get(position));
+        holder.mTvMessage.setText(mMessages.get(position).getMessage());
+        holder.mTvContact.setText(mMessages.get(position).getSender());
     }
 
     @Override
@@ -44,12 +48,12 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
         }
     }
 
-
     /**
      * Class ViewHolder
      */
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        private TextView mTvContact;
         private TextView mTvMessage;
         private ImageButton mImgBtnSpeak;
 
@@ -63,7 +67,6 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
                 }
             });
-
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -74,10 +77,10 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
         private void initView(View item) {
             mTvMessage = item.findViewById(R.id.tvItemMesssage);
+            mTvContact = item.findViewById(R.id.tvItemContact);
             mImgBtnSpeak = item.findViewById(R.id.imgBtnSpeak);
         }
     }
-
 
     /**
      * Callback click item.

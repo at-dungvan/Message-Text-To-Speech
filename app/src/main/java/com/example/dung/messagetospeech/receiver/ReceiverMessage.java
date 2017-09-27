@@ -1,4 +1,4 @@
-package com.example.dung.messagetospeech;
+package com.example.dung.messagetospeech.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,13 +8,18 @@ import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
+import com.example.dung.messagetospeech.R;
+import com.example.dung.messagetospeech.models.Message;
+import com.example.dung.messagetospeech.ui.MainActivity;
+
 /**
  * Created by dung on 29/08/2017.
  */
-
 public class ReceiverMessage extends BroadcastReceiver {
 
-    final SmsManager sms = SmsManager.getDefault();
+    final SmsManager mSms = SmsManager.getDefault();
+    private Message mMessage;
+
     public void onReceive(Context context, Intent intent) {
         // Get the SMS message received
         final Bundle bundle = intent.getExtras();
@@ -33,7 +38,8 @@ public class ReceiverMessage extends BroadcastReceiver {
                     // Display the SMS message in a Toast
                     Toast.makeText(context, formattedText, Toast.LENGTH_LONG).show();
                     MainActivity inst = MainActivity.instance();
-                    inst.updateList(formattedText);
+                    mMessage = new Message(inst.getContactByPhone(sender), message);
+                    inst.updateList(mMessage);
                 }
             }
         } catch (Exception e) {
