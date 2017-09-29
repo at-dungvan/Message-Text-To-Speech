@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.dung.messagetospeech.R;
@@ -19,12 +20,12 @@ public class ReceiverMessage extends BroadcastReceiver {
 
     final SmsManager mSms = SmsManager.getDefault();
     private Message mMessage;
-
     public void onReceive(Context context, Intent intent) {
         // Get the SMS message received
         final Bundle bundle = intent.getExtras();
         try {
             if (bundle != null) {
+                Log.d("aaaaaaaaaaaaa", "onReceive: ");
                 // A PDU is a "protocol data unit". This is the industrial standard for SMS message
                 final Object[] pdusObj = (Object[]) bundle.get("pdus");
                 for (int i = 0; i < pdusObj.length; i++) {
@@ -34,12 +35,13 @@ public class ReceiverMessage extends BroadcastReceiver {
                     String phoneNumber = sms.getDisplayOriginatingAddress();
                     String sender = phoneNumber;
                     String message = sms.getDisplayMessageBody();
-                    String formattedText = String.format(context.getResources().getString(R.string.sms_message), sender, message);
+                    String formattedText = String.format(context.getResources().getString(R.string.sms_message), MainActivity.getContactByPhone(sender), message);
                     // Display the SMS message in a Toast
                     Toast.makeText(context, formattedText, Toast.LENGTH_LONG).show();
-                    MainActivity inst = MainActivity.instance();
-                    mMessage = new Message(inst.getContactByPhone(sender), message);
-                    inst.updateList(mMessage);
+                    MainActivity.ConvertTextToSpeech(formattedText);
+                    mMessage = new Message(MainActivity.getContactByPhone(sender), message);
+                    //TODO add tts here.
+                    MainActivity.updateList(mMessage);
                 }
             }
         } catch (Exception e) {

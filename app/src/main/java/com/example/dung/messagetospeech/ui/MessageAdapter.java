@@ -64,12 +64,6 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
             mImgBtnSpeak.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                }
-            });
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
                     mOnItemClickListener.OnItemClick(getAdapterPosition());
                 }
             });

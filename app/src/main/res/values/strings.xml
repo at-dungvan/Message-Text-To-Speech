@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Message To Speech</string>
-    <string name="sms_message"> From : %1$s: %2$s</string>
+    <string name="sms_message"> from %1$s, the message content is %2$s</string>
 </resources>
