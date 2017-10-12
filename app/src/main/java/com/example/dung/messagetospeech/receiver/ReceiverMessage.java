@@ -6,10 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.example.dung.messagetospeech.R;
 import com.example.dung.messagetospeech.models.Message;
 import com.example.dung.messagetospeech.ui.MainActivity;
 
@@ -25,7 +22,6 @@ public class ReceiverMessage extends BroadcastReceiver {
         final Bundle bundle = intent.getExtras();
         try {
             if (bundle != null) {
-                Log.d("aaaaaaaaaaaaa", "onReceive: ");
                 // A PDU is a "protocol data unit". This is the industrial standard for SMS message
                 final Object[] pdusObj = (Object[]) bundle.get("pdus");
                 for (int i = 0; i < pdusObj.length; i++) {
@@ -35,10 +31,7 @@ public class ReceiverMessage extends BroadcastReceiver {
                     String phoneNumber = sms.getDisplayOriginatingAddress();
                     String sender = phoneNumber;
                     String message = sms.getDisplayMessageBody();
-                    String formattedText = String.format(context.getResources().getString(R.string.sms_message), MainActivity.getContactByPhone(sender), message);
-                    // Display the SMS message in a Toast
-                    Toast.makeText(context, formattedText, Toast.LENGTH_LONG).show();
-                    MainActivity.ConvertTextToSpeech(formattedText);
+                    MainActivity.ConvertTextToSpeech(MainActivity.getContactByPhone(sender), message, context);
                     mMessage = new Message(MainActivity.getContactByPhone(sender), message);
                     //TODO add tts here.
                     MainActivity.updateList(mMessage);

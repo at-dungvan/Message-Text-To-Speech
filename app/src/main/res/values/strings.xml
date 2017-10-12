@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Message To Speech</string>
-    <string name="sms_message"> from %1$s, the message content is %2$s</string>
+    <string name="read_sender">You have a message from %1$s</string>
+    <string name="read_message">the message content is: %1$s</string>
+    <string name="message_unavailable">can not read the message or the message unavailable</string>
 </resources>

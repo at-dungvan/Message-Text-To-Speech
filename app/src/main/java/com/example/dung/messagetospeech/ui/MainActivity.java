@@ -2,6 +2,7 @@ package com.example.dung.messagetospeech.ui;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,13 +15,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.dung.messagetospeech.R;
 import com.example.dung.messagetospeech.models.Message;
 import com.example.dung.messagetospeech.models.MyContact;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,60 +39,71 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getContact();
+        makeListContacts();
         setContentView(R.layout.activity_main);
         checkPermission();
+        initTTS();
         initView();
     }
 
     private void initView() {
-        initTTS();
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerMessage);
         mAdapter = new MessageAdapter(mMessages, new MessageAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(int position) {
                 //callback here
-                Log.d("aaaaaaaaaaaaaa", "OnItemClick: " + position);
                 mCurrentPosition = position;
-                String text = mMessages.get(mCurrentPosition).getMessage();
-                ConvertTextToSpeech(text);
+                String message = mMessages.get(mCurrentPosition).getMessage();
+                ConvertTextToSpeech("", message, getApplicationContext());
             }
         });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-        Toast.makeText(MainActivity.this, "Size message: " + mMessages.size() + ", Size contact: " + mContacts.size(), Toast.LENGTH_SHORT).show();
     }
 
     private void initTTS() {
-        Log.d("aaaaaaaaaaaaaa", "initTTS: ");
         mTextToSpeech = new TextToSpeech(MainActivity.this, new TextToSpeech.OnInitListener() {
 
             @Override
             public void onInit(int status) {
                 // TODO Auto-generated method stub
                 if (status == TextToSpeech.SUCCESS) {
-                    int result = mTextToSpeech.setLanguage(Locale.US);
+                    Locale lang = Locale.getDefault();
+                    int result = mTextToSpeech.setLanguage(lang);
                     if (result == TextToSpeech.LANG_MISSING_DATA ||
                             result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.d("aaaaaaaaaaaaa", "This Language is not supported");
+                        Log.d("initTTS", "The Language" + lang.toString()  + " is not supported");
                     } else {
-                        Log.d("aaaaaaaaaaaaa", "support language");
+                        Log.d("initTTS", "support language " + lang.toString());
                     }
                 } else
-                    Log.d("aaaaaaaaaaaa", "Initilization Failed!");
+                    Log.d("initTTS", "Initilization Failed!");
             }
         });
     }
 
-    public static void ConvertTextToSpeech(String text) {
+    public static void ConvertTextToSpeech(String sender, String message, Context context) {
         // TODO Auto-generated method stub
-        Log.d("aaaaaaaaaaaaaaaa", "ConvertTextToSpeech: ");
-        if (text == null || "".equals(text)) {
-            text = "Content not available";
-            mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-        } else
-            mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        String textSender = "";
+        try {
+            mTextToSpeech.speak(sender, TextToSpeech.QUEUE_FLUSH, null);
+            Double.parseDouble(sender);
+            char[] from = sender.toCharArray();
+            String readFrom = String.format(context.getResources().getString(R.string.read_sender), "");
+            mTextToSpeech.speak(readFrom, TextToSpeech.QUEUE_FLUSH, null);
+            for (char c: from) {
+                textSender += c + " ";
+            }
+        } catch (Exception e) {
+            textSender = sender;
+        }
+        textSender = textSender != "" ? String.format(context.getResources().getString(R.string.read_sender), textSender) : "";
+        message = message != "" ? String.format(context.getResources().getString(R.string.read_message), message) : "";
+        if (message == null || "".equals(message)) {
+            message = context.getResources().getString(R.string.message_unavailable);
+        }
+        mTextToSpeech.speak(textSender + message, TextToSpeech.QUEUE_FLUSH, null);
     }
 
 
@@ -98,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         if (mTextToSpeech != null) {
             mTextToSpeech.stop();
-            mTextToSpeech.shutdown();
         }
         super.onPause();
     }
@@ -111,31 +123,35 @@ public class MainActivity extends AppCompatActivity {
         int messageIndex = smsInboxCursor.getColumnIndex("body");
         if (messageIndex < 0 || !smsInboxCursor.moveToFirst()) return;
         do {
-
             String sender = smsInboxCursor.getString(senderIndex);
             String message = smsInboxCursor.getString(messageIndex);
-            String formattedText = String.format(getResources().getString(R.string.sms_message), sender, message);
             mMessages.add(new Message(getContactByPhone(sender), message));
-//            Toast.makeText(MainActivity.this, "Data read: " + formattedText + "/n : " + getContactByPhone(sender), Toast.LENGTH_SHORT).show();
         } while (smsInboxCursor.moveToNext());
     }
 
     public static void updateList(final Message newSms) {
-//        mAdapter.insert(newSms, 0);
         //TODO Or here
-        mMessages.add(newSms);
-        mAdapter.notifyItemInserted(mMessages.size());
+        mMessages.add(0, newSms);
+        mAdapter.notifyItemInserted(0);
     }
 
     /**
      * Method get list your-contact
      */
-    public void getContact() {
+    public void makeListContacts() {
         Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         while (phones.moveToNext()) {
             String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).replace(" ", "").replace("-", "");
             MainActivity.mContacts.add(new MyContact(name, phoneNumber));
+        }
+        if(mContacts.size() > 1) {
+            Collections.sort(mContacts, new Comparator<MyContact>() {
+                @Override
+                public int compare(MyContact myContact1, MyContact myContact2) {
+                    return myContact1.getName().compareTo(myContact2.getName());
+                }
+            });
         }
         phones.close();
     }
@@ -144,12 +160,13 @@ public class MainActivity extends AppCompatActivity {
      * Method get your-contact by phone
      */
     public static String getContactByPhone(String phone) {
-        int size = MainActivity.mContacts.size();
-        for (int i = 0; i< size; i++) {
-            if (phone.equals(MainActivity.mContacts.get(i).getPhone())) {
-                return MainActivity.mContacts.get(i).getName();
+        int index = Collections.binarySearch(mContacts, new MyContact(null, phone), new Comparator<MyContact>() {
+            @Override
+            public int compare(MyContact myContact1, MyContact myContact2) {
+                return myContact1.getPhone().compareTo(myContact2.getPhone());
             }
-        }
+        });
+        phone = index > 0 ? mContacts.get(index).getName() : phone;
         return phone;
     }
 
