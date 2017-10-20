@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 
+import com.example.dung.messagetospeech.lib.CustomTTSService;
 import com.example.dung.messagetospeech.models.Message;
+import com.example.dung.messagetospeech.models.MyContact;
 import com.example.dung.messagetospeech.ui.MainActivity;
 
 /**
@@ -17,6 +19,7 @@ public class ReceiverMessage extends BroadcastReceiver {
 
     final SmsManager mSms = SmsManager.getDefault();
     private Message mMessage;
+
     public void onReceive(Context context, Intent intent) {
         // Get the SMS message received
         final Bundle bundle = intent.getExtras();
@@ -31,10 +34,13 @@ public class ReceiverMessage extends BroadcastReceiver {
                     String phoneNumber = sms.getDisplayOriginatingAddress();
                     String sender = phoneNumber;
                     String message = sms.getDisplayMessageBody();
-                    MainActivity.ConvertTextToSpeech(MainActivity.getContactByPhone(sender), message, context);
-                    mMessage = new Message(MainActivity.getContactByPhone(sender), message);
-                    //TODO add tts here.
-                    MainActivity.updateList(mMessage);
+                    CustomTTSService.ConvertTextToSpeech(MyContact.getContactByPhone(sender), message, context.getApplicationContext());
+                    try {
+                        mMessage = new Message(MyContact.getContactByPhone(sender), message);
+                        MainActivity.updateList(mMessage);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         } catch (Exception e) {
