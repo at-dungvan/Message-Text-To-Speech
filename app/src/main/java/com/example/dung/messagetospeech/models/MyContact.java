@@ -1,5 +1,7 @@
 package com.example.dung.messagetospeech.models;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,13 +41,17 @@ public class MyContact {
      * Method get your-contact by phone
      */
     public static String getContactByPhone(String phone) {
+        phone = phone.replace(" ", "").replace("-", "").replace("+", "").replace("(", "").replace(")", "");
+        if (phone.startsWith("84")){
+            phone = phone.replaceFirst("84", "0");
+        }
         int index = Collections.binarySearch(MyContact.mContacts, new MyContact(null, phone), new Comparator<MyContact>() {
             @Override
             public int compare(MyContact myContact1, MyContact myContact2) {
                 return myContact1.getPhone().compareTo(myContact2.getPhone());
             }
         });
-        phone = index > 0 ? MyContact.mContacts.get(index).getName() : phone;
+        phone = index >= 0 ? MyContact.mContacts.get(index).getName() : phone;
         return phone;
     }
 }

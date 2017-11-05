@@ -32,11 +32,11 @@ public class ReceiverMessage extends BroadcastReceiver {
                     SmsMessage sms = SmsMessage.createFromPdu((byte[]) pdusObj[i]);
                     // Get sender phone number
                     String phoneNumber = sms.getDisplayOriginatingAddress();
-                    String sender = phoneNumber;
                     String message = sms.getDisplayMessageBody();
-                    CustomTTSService.ConvertTextToSpeech(MyContact.getContactByPhone(sender), message, context.getApplicationContext());
+                    String sender = MyContact.getContactByPhone(phoneNumber);
+                    CustomTTSService.ConvertTextToSpeech(sender, message, context.getApplicationContext());
                     try {
-                        mMessage = new Message(MyContact.getContactByPhone(sender), message);
+                        mMessage = new Message(sender, message);
                         MainActivity.updateList(mMessage);
                     } catch (Exception ex) {
                         ex.printStackTrace();
