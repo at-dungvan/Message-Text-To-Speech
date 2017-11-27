@@ -6,11 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.util.Log;
 
 import com.example.dung.messagetospeech.lib.CustomTTSService;
+import com.example.dung.messagetospeech.lib.HttpRequest;
 import com.example.dung.messagetospeech.models.Message;
 import com.example.dung.messagetospeech.models.MyContact;
-import com.example.dung.messagetospeech.ui.MainActivity;
+
+import java.util.Locale;
 
 /**
  * Created by dung on 29/08/2017.
@@ -33,13 +36,10 @@ public class ReceiverMessage extends BroadcastReceiver {
                     // Get sender phone number
                     String phoneNumber = sms.getDisplayOriginatingAddress();
                     String message = sms.getDisplayMessageBody();
-                    String sender = MyContact.getContactByPhone(phoneNumber);
-                    CustomTTSService.ConvertTextToSpeech(sender, message, context.getApplicationContext());
-                    try {
-                        mMessage = new Message(sender, message);
-                        MainActivity.updateList(mMessage);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                    if (Locale.getDefault().toString().equals("vi")) {
+                        new HttpRequest(context.getApplicationContext()).execute(sender, message);
+                    } else {
+                        CustomTTSService.ConvertTextToSpeech(MyContact.getContactByPhone(sender), message, context.getApplicationContext());
                     }
                 }
             }
