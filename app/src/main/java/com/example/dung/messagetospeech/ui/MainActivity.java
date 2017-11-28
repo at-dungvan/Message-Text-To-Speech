@@ -2,7 +2,6 @@ package com.example.dung.messagetospeech.ui;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;

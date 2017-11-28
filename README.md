@@ -9,6 +9,9 @@
 ```
  - Open android studio, go to `app/src/main/java/com/example/dung/messagetospeech/config/Config.java` and replace your service api of accent prediction.
  - The Source of server API accent prediction <a href="https://github.com/dungvan2512/Accent-Prediction-API">JSP SOURCES HERE!</a>
-Build the app to APK file to install in your machine and enjoy.
+  Build the app to APK file to install in your machine and enjoy.
 ### note!
-  if your want to build a server api response accent prediction for non-accented Vietnamese text, go to <a href="https://github.com/dungvan2512/Accent-Prediction-API"> souces </a> and build it to use.
+  if your want to build a server api response accent prediction for non-accented Vietnamese text, go to <a href="https://github.com/dungvan2512/Accent-Prediction-API"> sources </a> and build it to use.
+
+
+
