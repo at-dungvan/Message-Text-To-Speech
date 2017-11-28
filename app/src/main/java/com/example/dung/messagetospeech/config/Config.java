@@ -5,5 +5,8 @@ package com.example.dung.messagetospeech.config;
  */
 
 public interface Config {
-    public static final String URL_POST_REQUEST = "http://192.168.0.102:8080/pr";
+    /**
+     * config url send post request for vietnamese accent prediction
+     */
+    public static final String URL_POST_REQUEST = "http://accentprediction.ddns.net/pr";
 }

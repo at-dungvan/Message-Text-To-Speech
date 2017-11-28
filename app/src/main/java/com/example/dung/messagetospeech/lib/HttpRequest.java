@@ -38,7 +38,7 @@ public class HttpRequest  extends AsyncTask<String, Void, String> {
             }
             resMessage = doPostRequest(Config.URL_POST_REQUEST, message);
         } catch (Exception e) {
-            Log.d("bbbbbb", "doInBackground: " + e.toString());
+            Log.d("Exception", "doInBackground: " + e.toString());
         }
         return resMessage;
     }
@@ -66,7 +66,6 @@ public class HttpRequest  extends AsyncTask<String, Void, String> {
         }
         in.close();
 
-        Log.d("ooooo", "onPostExecute: " + response.toString());
         return response.toString();
     }
 
