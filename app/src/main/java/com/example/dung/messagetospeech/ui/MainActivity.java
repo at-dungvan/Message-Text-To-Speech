@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.PhoneNumberUtils;
 
 import com.example.dung.messagetospeech.R;
 import com.example.dung.messagetospeech.lib.CustomTTSService;
@@ -89,16 +90,11 @@ public class MainActivity extends AppCompatActivity {
         Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         while (phones.moveToNext()) {
             String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).replace(" ", "").replace("-", "");
+            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).replace(" ", "").replace("-", "").replace("+", "").replace("(", "").replace(")", "");
+            if (phoneNumber.startsWith("84")) {
+                phoneNumber = phoneNumber.replaceFirst("84", "0");
+            }
             MyContact.mContacts.add(new MyContact(name, phoneNumber));
-        }
-        if(MyContact.mContacts.size() > 1) {
-            Collections.sort(MyContact.mContacts, new Comparator<MyContact>() {
-                @Override
-                public int compare(MyContact myContact1, MyContact myContact2) {
-                    return myContact1.getName().compareTo(myContact2.getName());
-                }
-            });
         }
         phones.close();
     }

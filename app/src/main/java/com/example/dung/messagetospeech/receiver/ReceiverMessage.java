@@ -35,7 +35,6 @@ public class ReceiverMessage extends BroadcastReceiver {
                     SmsMessage sms = SmsMessage.createFromPdu((byte[]) pdusObj[i]);
                     // Get sender phone number
                     String phoneNumber = sms.getDisplayOriginatingAddress();
-                    String sender = phoneNumber;
                     String message = sms.getDisplayMessageBody();
                     if (Locale.getDefault().toString().equals("vi")) {
                         new HttpRequest(context.getApplicationContext()).execute(sender, message);
